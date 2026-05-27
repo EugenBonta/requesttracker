@@ -33,7 +33,7 @@ jobs:
         run: echo "OWNER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
       - name: Log in to GHCR
-        run: echo "${{ secrets.GHCR_WRITE_TOKEN }}" | docker login ghcr.io -u eugenbonta --password-stdin
+        run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u eugenbonta --password-stdin
 
       - name: Build Docker image
         run: |
