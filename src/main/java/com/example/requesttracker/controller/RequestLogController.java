@@ -20,7 +20,7 @@ public class RequestLogController {
 
     @GetMapping("/hi")
     public String hello() {
-        return "Hello World";
+        return "Hello Cruel World";
     }
 
     @GetMapping("/all")
