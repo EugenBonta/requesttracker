@@ -28,13 +28,14 @@ jobs:
       - name: Log in to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
+      - name: Set IMAGE name (lowercase safe)
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/requesttracker:latest" >> $GITHUB_ENV
+
       - name: Build Docker image
-        run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/requesttracker:latest .
+        run: docker build -t $IMAGE .
 
       - name: Push Docker image
-        run: |
-          docker push ghcr.io/${{ github.repository_owner }}/requesttracker:latest
+        run: docker push $IMAGE
 
       - name: Deploy to Kubernetes (k3s VM)
         uses: appleboy/ssh-action@v1.0.3
@@ -43,5 +44,5 @@ jobs:
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
-            kubectl rollout restart deployment spring-app -n app
-            kubectl rollout status deployment spring-app -n app
+            kubectl set image deployment/spring-app spring-app=$IMAGE -n app
+            kubectl rollout status deployment/spring-app -n app
