@@ -18,10 +18,15 @@ public class RequestLogController {
         this.requestLogService = requestLogService;
     }
 
-    /*@GetMapping("/all")
+    @GetMapping("/hi")
+    public String hello() {
+        return "Hello World";
+    }
+
+    @GetMapping("/all")
     public ResponseEntity<List<RequestLog>> getAllRequestLogs() {
         return ResponseEntity.ok(requestLogService.findAll());
-    }*/
+    }
 
     @GetMapping("/top-10")
     public ResponseEntity<List<RequestLog>> getTop10RequestLogs() {
