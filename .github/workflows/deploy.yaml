@@ -26,11 +26,11 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ghcr.io/${{ github.repository }}:latest .
+          ddocker build -t ghcr.io/eugenbonta/requesttracker:latest .
 
       - name: Push Docker image
         run: |
-          docker push ghcr.io/${{ github.repository }}:latest
+          ddocker build -t ghcr.io/eugenbonta/requesttracker:latest .
 
       - name: Deploy to Kubernetes (k3s VM)
         uses: appleboy/ssh-action@v1.0.3
