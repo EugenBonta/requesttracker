@@ -20,7 +20,7 @@ public class RequestLogController {
 
     @GetMapping("/hi")
     public String hello() {
-        return "Hello World333";
+        return "local yaml";
     }
 
     @GetMapping("/all")
