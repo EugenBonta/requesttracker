@@ -7,7 +7,6 @@ on:
 permissions:
   contents: read
   packages: write
-  id-token: write
 
 jobs:
   build-and-deploy:
@@ -26,23 +25,29 @@ jobs:
       - name: Build Maven
         run: mvn clean package -DskipTests
 
-      - name: Set image tag
-        run: echo "TAG=${GITHUB_SHA}" >> $GITHUB_ENV
-
+      # 🔑 lowercase owner fix
       - name: Set lowercase owner
         run: echo "OWNER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
-      - name: Log in to GHCR
-        run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u eugenbonta --password-stdin
+      # 🏷 image tag
+      - name: Set image tag
+        run: echo "TAG=${GITHUB_SHA}" >> $GITHUB_ENV
 
+      # 🔐 login GHCR (IMPORTANT: GITHUB_TOKEN, nu alt token)
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      # 🐳 build image
       - name: Build Docker image
         run: |
           docker build -t ghcr.io/${{ env.OWNER }}/requesttracker:${{ env.TAG }} .
 
+      # 📤 push image
       - name: Push Docker image
         run: |
           docker push ghcr.io/${{ env.OWNER }}/requesttracker:${{ env.TAG }}
 
+      # 🚀 deploy on VM
       - name: Deploy to Kubernetes (k3s VM)
         uses: appleboy/ssh-action@v1.0.3
         with:
