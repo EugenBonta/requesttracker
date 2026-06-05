@@ -55,7 +55,25 @@ jobs:
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
+            cd ~/requesttracker
+
+            git pull origin main
+
+            kubectl apply -f mongodb/mongo-pvc.yaml
+            kubectl apply -f mongodb/mongo-service.yaml
+            kubectl apply -f mongodb/mongo-deployment.yaml
+
+            kubectl apply -f spring/service.yaml
+            kubectl apply -f spring/ingress.yaml
+            kubectl apply -f spring/servicemonitor.yaml
+
             kubectl set image deployment/spring-app \
-              spring-app=ghcr.io/${{ env.OWNER }}/requesttracker:${{ env.TAG }} -n app
+              spring-app=ghcr.io/${{ env.OWNER }}/requesttracker:${{ env.TAG }} \
+              -n app
+
+            kubectl apply -f spring/deployment.yaml
+
+            kubectl apply -f monitoring/prometheus-ingress.yaml
+            kubectl apply -f monitoring/grafana-ingress.yaml
 
             kubectl rollout status deployment/spring-app -n app
